@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Application locale de formation QCM ATE">
+    <title>✈️ ATE QCM Training</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="brand">
+                <span class="brand-icon">✈️</span>
+                <div>
+                    <strong>ATE QCM</strong>
+                    <span>Training Center</span>
+                </div>
+            </div>
+            <div class="topbar-actions">
+                <button id="themeToggle" class="theme-toggle" type="button" aria-label="Activer le mode sombre">
+                    🌙 Mode sombre
+                </button>
+                <button id="homeButton" class="top-home hidden" type="button">🏠 Menu</button>
+            </div>
+        </header>
+
+        <main>
+            <!-- HOME -->
+            <section id="homeScreen" class="screen">
+                <div class="hero">
+                    <div class="hero-icon">✈️</div>
+                    <p class="eyebrow">FORMATION ATE</p>
+                    <h1>ATE QCM TRAINING</h1>
+                    <p class="hero-subtitle">Entraînement Agent TNAO / ATE / Flight Dispatcher</p>
+                </div>
+
+                <div class="stats-card">
+                    <div class="section-title">
+                        <span>📊</span>
+                        <h2>MES STATISTIQUES</h2>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat">
+                            <span class="stat-value" id="bestScore">0%</span>
+                            <span class="stat-label">Meilleur score</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="quizzesCompleted">0</span>
+                            <span class="stat-label">Quiz terminés</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="questionsAnswered">0</span>
+                            <span class="stat-label">Questions répondues</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="correctAnswers">0</span>
+                            <span class="stat-label">Bonnes réponses</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="section-title">
+                        <span>🎯</span>
+                        <h2>Choisissez votre mode</h2>
+                    </div>
+
+                    <div class="mode-grid">
+                        <button class="mode-card" id="randomQuizButton" type="button">
+                            <span class="mode-icon">🎲</span>
+                            <span class="mode-title">40 Questions aléatoires</span>
+                            <span class="mode-description">Questions mélangées parmi toutes les matières.</span>
+                        </button>
+
+                        <button class="mode-card" id="allQuizButton" type="button">
+                            <span class="mode-icon">📚</span>
+                            <span class="mode-title">Toutes les questions</span>
+                            <span class="mode-description">Toutes les questions dans l'ordre de questionBank.</span>
+                        </button>
+                    </div>
+
+                    <label class="shuffle-setting">
+                        <input type="checkbox" id="shuffleAnswers" checked>
+                        <span class="custom-checkbox"></span>
+                        <span><strong>Mélanger les réponses</strong><small>La bonne réponse reste correctement identifiée.</small></span>
+                    </label>
+
+                    <button id="adminButton" class="admin-access-button" type="button">⚙️ Gestion des questions</button>
+                </div>
+
+                <div class="panel">
+                    <div class="section-title">
+                        <span>📚</span>
+                        <h2>Choisir une matière</h2>
+                    </div>
+                    <div id="subjectsGrid" class="subjects-grid"></div>
+                </div>
+
+                <div id="emptyHomeMessage" class="empty-state hidden">
+                    <div>⚠️</div>
+                    <strong>Aucune question disponible</strong>
+                    <p>Ajoutez des questions dans <code>questionBank</code> dans le fichier <code>script.js</code>.</p>
+                </div>
+            </section>
+
+            <!-- GESTION DES QUESTIONS -->
+            <section id="adminScreen" class="screen hidden">
+                <div class="admin-header">
+                    <div>
+                        <p class="eyebrow">ADMINISTRATION</p>
+                        <h1>⚙️ Gestion des questions</h1>
+                        <p class="admin-subtitle">Ajoutez, recherchez, modifiez ou supprimez les questions de votre banque.</p>
+                    </div>
+                    <button id="adminBackButton" class="secondary-button" type="button">🏠 Retour au menu</button>
+                </div>
+
+                <div class="admin-grid">
+                    <div class="panel admin-form-panel">
+                        <div class="section-title">
+                            <span>➕</span>
+                            <h2 id="questionFormTitle">Ajouter une question</h2>
+                        </div>
+
+                        <form id="questionForm" class="question-form">
+                            <input type="hidden" id="editingQuestionId">
+
+                            <label>
+                                <span>Question</span>
+                                <textarea id="adminQuestionText" rows="4" required placeholder="Texte de la question"></textarea>
+                            </label>
+
+                            <label>
+                                <span>Catégorie</span>
+                                <select id="adminCategory" required></select>
+                            </label>
+
+                            <div class="admin-answer-grid">
+                                <label>
+                                    <span>Réponse A</span>
+                                    <input id="adminAnswerA" type="text" required>
+                                </label>
+                                <label>
+                                    <span>Réponse B</span>
+                                    <input id="adminAnswerB" type="text" required>
+                                </label>
+                                <label>
+                                    <span>Réponse C</span>
+                                    <input id="adminAnswerC" type="text">
+                                </label>
+                                <label>
+                                    <span>Réponse D</span>
+                                    <input id="adminAnswerD" type="text">
+                                </label>
+                            </div>
+
+                            <fieldset class="correct-answer-fieldset">
+                                <legend>Bonne réponse</legend>
+                                <div class="correct-answer-options">
+                                    <label><input type="radio" name="correctAnswer" value="0" required><span>A</span></label>
+                                    <label><input type="radio" name="correctAnswer" value="1"><span>B</span></label>
+                                    <label><input type="radio" name="correctAnswer" value="2"><span>C</span></label>
+                                    <label><input type="radio" name="correctAnswer" value="3"><span>D</span></label>
+                                </div>
+                                <small id="correctAnswerHint">Sélectionnez clairement la bonne réponse.</small>
+                            </fieldset>
+
+                            <div class="form-actions">
+                                <button id="saveQuestionButton" class="primary-button" type="submit">Ajouter la question</button>
+                                <button id="cancelEditButton" class="secondary-button hidden" type="button">Annuler</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="panel admin-list-panel">
+                        <div class="admin-list-heading">
+                            <div class="section-title">
+                                <span>📋</span>
+                                <h2>Toutes les questions</h2>
+                            </div>
+                            <strong id="questionCountLabel">0 question</strong>
+                        </div>
+
+                        <div class="question-filters">
+                            <label class="search-field">
+                                <span>🔎</span>
+                                <input id="questionSearch" type="search" placeholder="Rechercher une question, réponse ou catégorie..." autocomplete="off">
+                            </label>
+                            <select id="questionCategoryFilter" aria-label="Filtrer par catégorie"></select>
+                        </div>
+
+                        <div id="adminQuestionsList" class="admin-questions-list"></div>
+                        <div id="adminEmptyState" class="empty-state hidden">
+                            <div>🔎</div>
+                            <strong>Aucune question trouvée</strong>
+                            <p>Essayez une autre recherche ou une autre catégorie.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- QUIZ -->
+            <section id="quizScreen" class="screen hidden">
+                <div class="quiz-header">
+                    <div>
+                        <span class="quiz-subject" id="quizSubject">📚 Matière</span>
+                        <h2 id="quizModeTitle">Quiz</h2>
+                    </div>
+                    <div class="quiz-counter">
+                        <span>Question</span>
+                        <strong><span id="currentQuestion">1</span> / <span id="totalQuestions">40</span></strong>
+                    </div>
+                </div>
+
+                <div class="progress-wrap">
+                    <div class="progress-info">
+                        <span>Progression</span>
+                        <strong id="progressPercent">0%</strong>
+                    </div>
+                    <div class="progress-track">
+                        <div id="progressBar" class="progress-bar"></div>
+                    </div>
+                </div>
+
+                <div class="score-strip">
+                    <span>🏆 Score actuel</span>
+                    <strong id="quizScore">0</strong>
+                </div>
+
+                <div class="question-card">
+                    <div class="question-label">QUESTION <span id="questionNumberLabel">1</span></div>
+                    <h1 id="questionText"></h1>
+                    <div id="answersContainer" class="answers"></div>
+
+                    <div id="feedback" class="feedback hidden">
+                        <div id="feedbackTitle" class="feedback-title"></div>
+                        <div id="feedbackCorrectAnswer" class="feedback-answer"></div>
+                        <p id="explanationText"></p>
+                    </div>
+
+                    <button id="nextButton" class="primary-button next-button hidden" type="button">
+                        Question suivante <span>→</span>
+                    </button>
+                </div>
+
+                <div class="keyboard-hint">
+                    <span>⌨️ Raccourcis :</span>
+                    <kbd>1</kbd>/<kbd>A</kbd> <kbd>2</kbd>/<kbd>B</kbd> <kbd>3</kbd>/<kbd>C</kbd> <kbd>4</kbd>/<kbd>D</kbd> pour répondre · <kbd>Entrée</kbd> pour continuer
+                </div>
+            </section>
+
+            <!-- RESULTS -->
+            <section id="resultScreen" class="screen hidden">
+                <div class="result-hero">
+                    <div class="result-icon" id="resultIcon">🎉</div>
+                    <p class="eyebrow">ÉVALUATION TERMINÉE</p>
+                    <h1>Quiz terminé !</h1>
+                    <p id="resultModeText"></p>
+                </div>
+
+                <div class="score-cards">
+                    <div class="score-card primary-score">
+                        <span>Score /20</span>
+                        <strong id="score20">0 / 20</strong>
+                    </div>
+                    <div class="score-card">
+                        <span>Pourcentage</span>
+                        <strong id="scorePercent">0%</strong>
+                    </div>
+                    <div class="score-card">
+                        <span>Score /100</span>
+                        <strong id="score100">0 / 100</strong>
+                    </div>
+                </div>
+
+                <div class="evaluation-card">
+                    <span id="evaluationEmoji">💪</span>
+                    <div>
+                        <strong id="evaluationTitle">Il faut encore réviser</strong>
+                        <p id="evaluationText">Continuez votre entraînement.</p>
+                    </div>
+                </div>
+
+                <div class="result-stats">
+                    <div><span>✓</span><strong id="resultCorrect">0</strong><small>Bonnes réponses</small></div>
+                    <div><span>✗</span><strong id="resultWrong">0</strong><small>Mauvaises réponses</small></div>
+                    <div><span>📊</span><strong id="resultTotal">0</strong><small>Total</small></div>
+                </div>
+
+                <div id="mistakesSection" class="mistakes-section hidden">
+                    <div class="section-title">
+                        <span>📋</span>
+                        <h2>Mes erreurs</h2>
+                    </div>
+                    <div id="mistakesList"></div>
+                </div>
+
+                <div class="result-actions">
+                    <button id="restartButton" class="primary-button" type="button">🔄 Recommencer</button>
+                    <button id="mistakesButton" class="secondary-button" type="button">📋 Voir mes erreurs</button>
+                    <button id="menuButton" class="secondary-button" type="button">🏠 Retour au menu</button>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <span>✈️ ATE QCM Training</span>
+            <span>Application locale · Fonctionne hors ligne</span>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
